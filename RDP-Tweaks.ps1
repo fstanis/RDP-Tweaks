@@ -204,6 +204,37 @@ $registryMods = @(
             elseif ($value -eq 1) { return "Enabled" }
             else { return "Indeterminate" }
         }
+    },
+    @{
+        Name = "Enable Chrome Remote Desktop curtain mode"
+        Enable = {
+            reg add "HKLM\Software\Policies\Google\Chrome" /v "RemoteAccessHostRequireCurtain" /t REG_DWORD /d 1 /f 2>&1 | Out-Null
+            reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v "fDenyTSConnections" /t REG_DWORD /d 0 /f 2>&1 | Out-Null
+            reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v "UserAuthentication" /t REG_DWORD /d 0 /f 2>&1 | Out-Null
+            reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v "SecurityLayer" /t REG_DWORD /d 1 /f 2>&1 | Out-Null
+        }
+        Disable = {
+            reg delete "HKLM\Software\Policies\Google\Chrome" /v "RemoteAccessHostRequireCurtain" /f 2>&1 | Out-Null
+            reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v "fDenyTSConnections" /t REG_DWORD /d 1 /f 2>&1 | Out-Null
+            reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v "UserAuthentication" /t REG_DWORD /d 1 /f 2>&1 | Out-Null
+            reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v "SecurityLayer" /t REG_DWORD /d 2 /f 2>&1 | Out-Null
+        }
+        CheckState = {
+            $v1 = Get-RegistryValueSafe -Path "HKLM\Software\Policies\Google\Chrome" -Name "RemoteAccessHostRequireCurtain"
+            $v2 = Get-RegistryValueSafe -Path "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections"
+            $v3 = Get-RegistryValueSafe -Path "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication"
+            $v4 = Get-RegistryValueSafe -Path "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "SecurityLayer"
+
+            if ($v1 -eq 1 -and $v2 -eq 0 -and $v3 -eq 0 -and $v4 -eq 1) {
+                return "Enabled"
+            }
+            elseif ($v1 -eq $null -and $v2 -ne 0 -and $v3 -ne 0 -and $v4 -ne 1) {
+                return "Disabled"
+            }
+            else {
+                return "Indeterminate"
+            }
+        }
     }
 )
 
@@ -213,7 +244,7 @@ $global:isAppEnabled = $false
 # Create the main form
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "RDP-Tweaks"
-$form.Size = New-Object System.Drawing.Size(650, 710)
+$form.Size = New-Object System.Drawing.Size(650, 745)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = 'FixedSingle'
 $form.MaximizeBox = $false
@@ -239,7 +270,7 @@ $form.Controls.Add($instructionLabel)
 # Create panel for checkboxes
 $panel = New-Object System.Windows.Forms.Panel
 $panel.Location = New-Object System.Drawing.Point(10, 85)
-$panel.Size = New-Object System.Drawing.Size(610, 380)
+$panel.Size = New-Object System.Drawing.Size(610, 415)
 $panel.AutoScroll = $true
 $panel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
 $form.Controls.Add($panel)
@@ -298,7 +329,7 @@ foreach ($mod in $registryMods) {
 
 # Create GroupBox for Quality Settings
 $qualityGroupBox = New-Object System.Windows.Forms.GroupBox
-$qualityGroupBox.Location = New-Object System.Drawing.Point(10, 475)
+$qualityGroupBox.Location = New-Object System.Drawing.Point(10, 510)
 $qualityGroupBox.Size = New-Object System.Drawing.Size(610, 80)
 $qualityGroupBox.Text = "RemoteFX Quality Settings (Visual Experience, Frame Rate, Compression, Image Quality)"
 $qualityGroupBox.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
@@ -376,7 +407,7 @@ $setQualityState = {
 
 # Create status label
 $statusLabel = New-Object System.Windows.Forms.Label
-$statusLabel.Location = New-Object System.Drawing.Point(10, 610)
+$statusLabel.Location = New-Object System.Drawing.Point(10, 645)
 $statusLabel.Size = New-Object System.Drawing.Size(610, 20)
 $statusLabel.Text = "Status: Ready - Current registry values loaded"
 $statusLabel.Font = New-Object System.Drawing.Font("Segoe UI", 8)
@@ -510,7 +541,7 @@ $refreshAppState = {
 
 # Create Refresh button
 $refreshButton = New-Object System.Windows.Forms.Button
-$refreshButton.Location = New-Object System.Drawing.Point(210, 570)
+$refreshButton.Location = New-Object System.Drawing.Point(210, 605)
 $refreshButton.Size = New-Object System.Drawing.Size(100, 30)
 $refreshButton.Text = "Refresh"
 $refreshButton.Font = New-Object System.Drawing.Font("Segoe UI", 9)
@@ -524,7 +555,7 @@ $form.Controls.Add($refreshButton)
 
 # Create Close button
 $closeButton = New-Object System.Windows.Forms.Button
-$closeButton.Location = New-Object System.Drawing.Point(330, 570)
+$closeButton.Location = New-Object System.Drawing.Point(330, 605)
 $closeButton.Size = New-Object System.Drawing.Size(100, 30)
 $closeButton.Text = "Close"
 $closeButton.Font = New-Object System.Drawing.Font("Segoe UI", 9)
