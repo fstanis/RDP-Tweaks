@@ -33,6 +33,7 @@ The script provides a GUI to manage the following registry-based RDP optimizatio
 - **Allow RDP to use both UDP and TCP**: Configures the RDP transport protocol to use UDP for better performance on low-latency networks, with TCP as a fallback.
 - **Enable hardware H.264 encoding**: Prefers using hardware-accelerated H.264/AVC video encoding, which is more efficient than software encoding.
 - **Prioritize H.264/AVC 444 graphics mode**: Enables the highest quality H.264 mode (AVC 444) for pixel-perfect color accuracy, which is beneficial for text and sharp images.
+- **Use XDDM drivers instead of WDDM**: Disables Windows Display Driver Model (WDDM) so sessions will attempt to use the older Windows 2000 Display Driver Model (XDDM) instead.
 
 ### RemoteFX Quality Presets
 

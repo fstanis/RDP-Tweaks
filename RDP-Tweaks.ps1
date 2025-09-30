@@ -206,6 +206,21 @@ $registryMods = @(
         }
     },
     @{
+        Name = "Use XDDM drivers instead of WDDM (may improve performance on NVIDIA)"
+        Enable = {
+            reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" /v "fEnableWddmDriver" /t REG_DWORD /d 0 /f 2>&1 | Out-Null
+        }
+        Disable = {
+            reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" /v "fEnableWddmDriver" /f 2>&1 | Out-Null
+        }
+        CheckState = {
+            $value = Get-RegistryValueSafe -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name "fEnableWddmDriver"
+            if ($value -eq $null) { return "Disabled" }
+            elseif ($value -eq 0) { return "Enabled" }
+            else { return "Indeterminate" }
+        }
+    },
+    @{
         Name = "Enable Chrome Remote Desktop curtain mode"
         Enable = {
             reg add "HKLM\Software\Policies\Google\Chrome" /v "RemoteAccessHostRequireCurtain" /t REG_DWORD /d 1 /f 2>&1 | Out-Null
