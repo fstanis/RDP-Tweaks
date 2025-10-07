@@ -422,7 +422,7 @@ $setQualityState = {
 
 # Create status label
 $statusLabel = New-Object System.Windows.Forms.Label
-$statusLabel.Location = New-Object System.Drawing.Point(10, 645)
+$statusLabel.Location = New-Object System.Drawing.Point(10, 655)
 $statusLabel.Size = New-Object System.Drawing.Size(610, 20)
 $statusLabel.Text = "Status: Ready - Current registry values loaded"
 $statusLabel.Font = New-Object System.Drawing.Font("Segoe UI", 8)
@@ -556,7 +556,7 @@ $refreshAppState = {
 
 # Create Refresh button
 $refreshButton = New-Object System.Windows.Forms.Button
-$refreshButton.Location = New-Object System.Drawing.Point(210, 605)
+$refreshButton.Location = New-Object System.Drawing.Point(10, 605)
 $refreshButton.Size = New-Object System.Drawing.Size(100, 30)
 $refreshButton.Text = "Refresh"
 $refreshButton.Font = New-Object System.Drawing.Font("Segoe UI", 9)
@@ -568,9 +568,43 @@ $refreshButton.Add_Click({
 $form.Controls.Add($refreshButton)
 & $refreshAppState
 
+# Create Restart RDP button
+$restartButton = New-Object System.Windows.Forms.Button
+$restartButton.Location = New-Object System.Drawing.Point(130, 605)
+$restartButton.Size = New-Object System.Drawing.Size(100, 30)
+$restartButton.Text = "Restart RDP"
+$restartButton.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$restartButton.Add_Click({
+    $restartButton.Enabled = $false
+    try {
+        $dependentServices = Get-Service -Name TermService -DependentServices | Where-Object { $_.Status -eq 'Running' }
+
+        foreach ($service in $dependentServices) {
+            Stop-Service -Name $service.Name -Force -ErrorAction Stop
+            Write-Host "Stopped dependent service: $($service.Name)"
+        }
+
+        Stop-Service -Name TermService -Force
+        Write-Host "Terminal Services stopped"
+        Start-Sleep -Seconds 3
+        Start-Service -Name TermService
+        Write-Host "Terminal Services restarted"
+
+        foreach ($service in $dependentServices) {
+            Start-Service -Name $service.Name -ErrorAction Stop
+            Write-Host "Restarted dependent service: $($service.Name)"
+        }
+    } catch {
+        [System.Windows.Forms.MessageBox]::Show("Error restarting services: $_", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+    } finally {
+        $restartButton.Enabled = $true
+    }
+})
+$form.Controls.Add($restartButton)
+
 # Create Close button
 $closeButton = New-Object System.Windows.Forms.Button
-$closeButton.Location = New-Object System.Drawing.Point(330, 605)
+$closeButton.Location = New-Object System.Drawing.Point(250, 605)
 $closeButton.Size = New-Object System.Drawing.Size(100, 30)
 $closeButton.Text = "Close"
 $closeButton.Font = New-Object System.Drawing.Font("Segoe UI", 9)
