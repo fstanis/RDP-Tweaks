@@ -25,6 +25,7 @@ The script provides a GUI to manage the following registry-based RDP optimizatio
 - **Optimize flow control settings for TermDD service**: Adjusts bandwidth allocation for display and virtual channels to prioritize a smoother visual experience.
 - **Remove artificial latency delay (InteractiveDelay)**: Removes a small, built-in delay in RDP interactivity.
 - **Optimize LanmanWorkstation network**: Disables network bandwidth throttling and enables support for larger network packets (MTU).
+- **Turn off desktop composition**: Disables desktop composition even if the client requests it. Usually improves performance.
 
 ### Graphics and Encoding
 
@@ -34,6 +35,7 @@ The script provides a GUI to manage the following registry-based RDP optimizatio
 - **Enable hardware H.264 encoding**: Prefers using hardware-accelerated H.264/AVC video encoding, which is more efficient than software encoding.
 - **Prioritize H.264/AVC 444 graphics mode**: Enables the highest quality H.264 mode (AVC 444) for pixel-perfect color accuracy, which is beneficial for text and sharp images.
 - **Use XDDM drivers instead of WDDM**: Disables Windows Display Driver Model (WDDM) so sessions will attempt to use the older Windows 2000 Display Driver Model (XDDM) instead.
+- **Turn off font smoothing**: Disables font smoothing for remote sessions. Enable this if you see issues with text rendering.
 
 ### RemoteFX Quality Presets
 

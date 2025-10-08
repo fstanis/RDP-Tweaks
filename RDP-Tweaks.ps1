@@ -221,6 +221,36 @@ $registryMods = @(
         }
     },
     @{
+        Name = "Turn off desktop composition"
+        Enable = {
+            reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" /v "fAllowDesktopCompositionOnServer" /t REG_DWORD /d 0 /f 2>&1 | Out-Null
+        }
+        Disable = {
+            reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" /v "fAllowDesktopCompositionOnServer" /f 2>&1 | Out-Null
+        }
+        CheckState = {
+            $value = Get-RegistryValueSafe -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name "fAllowDesktopCompositionOnServer"
+            if ($value -eq $null) { return "Disabled" }
+            elseif ($value -eq 0) { return "Enabled" }
+            else { return "Indeterminate" }
+        }
+    },
+    @{
+        Name = "Turn off font smoothing"
+        Enable = {
+            reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" /v "fNoFontSmoothing" /t REG_DWORD /d 1 /f 2>&1 | Out-Null
+        }
+        Disable = {
+            reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" /v "fNoFontSmoothing" /f 2>&1 | Out-Null
+        }
+        CheckState = {
+            $value = Get-RegistryValueSafe -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name "fNoFontSmoothing"
+            if ($value -eq $null) { return "Disabled" }
+            elseif ($value -eq 1) { return "Enabled" }
+            else { return "Indeterminate" }
+        }
+    },
+    @{
         Name = "Enable Chrome Remote Desktop curtain mode"
         Enable = {
             reg add "HKLM\Software\Policies\Google\Chrome" /v "RemoteAccessHostRequireCurtain" /t REG_DWORD /d 1 /f 2>&1 | Out-Null
