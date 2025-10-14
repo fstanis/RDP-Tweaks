@@ -29,6 +29,7 @@ The script provides a GUI to manage the following registry-based RDP optimizatio
 
 ### Graphics and Encoding
 
+- **Disable minimum frame rate requirement for DWM**: This can help resolve rendering issues with Chromium-based apps.
 - **Use hardware graphics adapters for RDP**: Forces RDP to use a hardware GPU for rendering, which is essential for graphically demanding applications.
 - **Enable RemoteFX/virtualized graphics**: Enables the RemoteFX graphics virtualization features.
 - **Allow RDP to use both UDP and TCP**: Configures the RDP transport protocol to use UDP for better performance on low-latency networks, with TCP as a fallback.

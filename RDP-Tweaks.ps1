@@ -45,6 +45,21 @@ $registryMods = @(
         }
     },
     @{
+        Name = "Disable minimum frame rate requirement for DWM"
+        Enable = {
+            reg add "HKLM\SOFTWARE\Microsoft\Windows\Dwm" /v "OverlayMinFPS" /t REG_DWORD /d 0 /f 2>&1 | Out-Null
+        }
+        Disable = {
+            reg delete "HKLM\SOFTWARE\Microsoft\Windows\Dwm" /v "OverlayMinFPS" /f 2>&1 | Out-Null
+        }
+        CheckState = {
+            $value = Get-RegistryValueSafe -Path "HKLM\SOFTWARE\Microsoft\Windows\Dwm" -Name "OverlayMinFPS"
+            if ($value -eq $null) { return "Disabled" }
+            elseif ($value -eq 0) { return "Enabled" }
+            else { return "Indeterminate" }
+        }
+    },
+    @{
         Name = "Set SystemResponsiveness to 0 for better performance"
         Enable = {
             reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 0x00000000 /f 2>&1 | Out-Null
